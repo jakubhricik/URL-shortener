@@ -26,7 +26,7 @@ public class UrlShortenerApplication {
 			roleService.saveRole(new Role(null, "ROLE_ADMIN"));
 			roleService.saveRole(new Role(null, "ROLE_USER"));
 
-			userService.saveUser(new AppUserDto(null, USERNAME, "Heslo", null));
+			userService.saveUser(AppUserDto.builder().username(USERNAME).password("PASS").build());
 
 			roleService.addRoleToUser("ROLE_ADMIN", USERNAME);
 			roleService.addRoleToUser("ROLE_USER", USERNAME);

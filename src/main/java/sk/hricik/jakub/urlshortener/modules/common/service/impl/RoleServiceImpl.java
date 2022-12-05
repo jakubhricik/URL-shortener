@@ -13,6 +13,8 @@ import sk.hricik.jakub.urlshortener.modules.common.repository.RoleRepository;
 import sk.hricik.jakub.urlshortener.modules.common.service.RoleService;
 import sk.hricik.jakub.urlshortener.util.ModelMapper;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,8 +26,16 @@ public class RoleServiceImpl implements RoleService {
     private final ModelMapper modelMapper;
 
     @Override
-    public RoleDto saveRole(Role role) {
-        return modelMapper.mapRoleToRoleDto(roleRepository.saveAndFlush(role));
+    public void saveRole(Role role) {
+        modelMapper.mapRoleToRoleDto(roleRepository.saveAndFlush(role));
+    }
+
+    @Override
+    public List<RoleDto> getRoles() {
+        return roleRepository.findAll()
+                .stream()
+                .map(modelMapper::mapRoleToRoleDto)
+                .toList();
     }
 
     @Override
