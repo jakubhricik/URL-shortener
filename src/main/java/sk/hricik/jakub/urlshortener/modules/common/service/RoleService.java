@@ -1,5 +1,6 @@
 package sk.hricik.jakub.urlshortener.modules.common.service;
 
+import sk.hricik.jakub.urlshortener.modules.common.dto.AppUserDto;
 import sk.hricik.jakub.urlshortener.modules.common.dto.RoleDto;
 import sk.hricik.jakub.urlshortener.modules.common.model.Role;
 
@@ -10,5 +11,5 @@ public interface RoleService {
 
     List<RoleDto> getRoles();
 
-    void addRoleToUser(String roleName, String username);
+    AppUserDto addRoleToUser(String roleName, String username);
 }
