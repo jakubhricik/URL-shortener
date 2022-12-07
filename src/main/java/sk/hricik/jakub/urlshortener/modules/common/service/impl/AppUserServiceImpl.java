@@ -29,7 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class AppUserServiceImpl implements AppUserService, UserDetailsService {
+public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
     private final RoleService roleService;
     private final ModelMapper modelMapper;
@@ -80,13 +80,4 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
                 .map(modelMapper::mapAppUserToAppUserDto).toList();
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AppUser> user = appUserRepository.findByUsername(username);
-        if(user.isEmpty())
-            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "Cannot find user with username: " + username);
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.get().getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
-        return new User(user.get().getUsername(), user.get().getPassword(), authorities);
-    }
 }

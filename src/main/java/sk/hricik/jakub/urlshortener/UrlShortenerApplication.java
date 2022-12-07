@@ -23,11 +23,6 @@ public class UrlShortenerApplication {
 	}
 
 	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
 	CommandLineRunner run(AppUserService userService, RoleService roleService) {
 		return args -> {
 			roleService.saveRole(new Role(null, "ROLE_ADMIN"));
