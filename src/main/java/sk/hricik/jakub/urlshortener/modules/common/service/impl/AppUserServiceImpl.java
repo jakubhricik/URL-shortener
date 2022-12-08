@@ -2,26 +2,16 @@ package sk.hricik.jakub.urlshortener.modules.common.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.hricik.jakub.urlshortener.modules.ApiException;
 import sk.hricik.jakub.urlshortener.modules.common.dto.AppUserDto;
 import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
-import sk.hricik.jakub.urlshortener.modules.common.model.Role;
 import sk.hricik.jakub.urlshortener.modules.common.repository.AppUserRepository;
-import sk.hricik.jakub.urlshortener.modules.common.repository.RoleRepository;
 import sk.hricik.jakub.urlshortener.modules.common.service.AppUserService;
-import sk.hricik.jakub.urlshortener.modules.common.service.RoleService;
 import sk.hricik.jakub.urlshortener.util.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,33 +21,24 @@ import java.util.Optional;
 @Slf4j
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final RoleService roleService;
     private final ModelMapper modelMapper;
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public AppUserDto saveUserDto(AppUserDto appUser) {
+    public AppUser saveUserDto(AppUserDto appUser) {
         AppUser user = modelMapper.mapAppUserDtoToAppUser(appUser);
-        return saveUser(user);
+        return saveUserAndEncodePassword(user);
     }
 
     @Override
-    public AppUserDto createUser(AppUserDto appUserDto) {
-        AppUserDto user = saveUserDto(appUserDto);
-        return roleService.addRoleToUser("ROLE_USER", user.getUsername());
-    }
-
-    @Override
-    public AppUserDto saveUser(AppUser newUser) {
-        List<AppUserDto> users = getUsers();
-        users.forEach(appUserDto -> {
-            if (appUserDto.getUsername().equals(newUser.getUsername()))
-                throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "There is already user with username: " + newUser.getUsername());
-        });
+    public AppUser saveUserAndEncodePassword(AppUser newUser) {
+        Optional<AppUser> user = appUserRepository.findByUsername(newUser.getUsername());
+        if (user.isPresent())
+            throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with username: " + newUser.getUsername());
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        return modelMapper.mapAppUserToAppUserDto(appUserRepository.saveAndFlush(newUser));
+        return appUserRepository.saveAndFlush(newUser);
     }
 
     @Override

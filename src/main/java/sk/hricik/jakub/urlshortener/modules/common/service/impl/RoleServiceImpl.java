@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.hricik.jakub.urlshortener.modules.ApiException;
-import sk.hricik.jakub.urlshortener.modules.common.dto.AppUserDto;
 import sk.hricik.jakub.urlshortener.modules.common.dto.RoleDto;
 import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
 import sk.hricik.jakub.urlshortener.modules.common.model.Role;
@@ -34,6 +33,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Role getRole(String name) {
+        return roleRepository.findByName(name);
+    }
+
+    @Override
     public List<RoleDto> getRoles() {
         return roleRepository.findAll()
                 .stream()
@@ -42,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public AppUserDto addRoleToUser(String roleName, String username) {
+    public AppUser addRoleToUser(String roleName, String username) {
         Role role = roleRepository.findByName(roleName);
         Optional<AppUser> user = appUserRepository.findByUsername(username);
         if (user.isEmpty())
@@ -52,6 +56,6 @@ public class RoleServiceImpl implements RoleService {
             user.get().setRoles(new ArrayList<>());
 
         user.get().getRoles().add(role);
-        return modelMapper.mapAppUserToAppUserDto(appUserRepository.saveAndFlush(user.get()));
+        return appUserRepository.saveAndFlush(user.get());
     }
 }

@@ -6,11 +6,9 @@ import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
 import java.util.List;
 
 public interface AppUserService {
-    AppUserDto saveUserDto(AppUserDto appUserDto);
+    AppUser saveUserDto(AppUserDto appUserDto);
 
-    AppUserDto createUser(AppUserDto appUserDto);
-
-    AppUserDto saveUser(AppUser appUser);
+    AppUser saveUserAndEncodePassword(AppUser appUser);
     AppUserDto getUserDto(String username);
 
     AppUser getUser(String username);

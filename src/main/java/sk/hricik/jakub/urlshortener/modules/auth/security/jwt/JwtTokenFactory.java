@@ -6,7 +6,6 @@ import sk.hricik.jakub.urlshortener.properties.SecurityProperties;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class JwtTokenFactory implements TokenFactory {
     public static final String AUTHORITIES_CLAIM_NAME = "authorities";
@@ -25,28 +24,27 @@ public class JwtTokenFactory implements TokenFactory {
     }
 
     @Override
-    public String createAccessToken(String subject, List<String> roles, Map<String, Object> additionalClaims, Date issuedAt) {
+    public String createAccessToken(Long subject, List<String> roles, Date issuedAt) {
         Date expiration = new Date(issuedAt.getTime() + (accessTokenValiditySeconds * 1000));
 
         return Jwts.builder()
-                .setSubject(subject)
+                .setSubject(subject.toString())
                 .setIssuedAt(issuedAt)
                 .setIssuer(issuer)
                 .setExpiration(expiration)
                 .claim(TOKEN_TYPE_CLAIM_NAME, TokenType.ACCESS_TOKEN)
                 .claim(AUTHORITIES_CLAIM_NAME, roles)
-                .addClaims(additionalClaims)
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .compact();
 
     }
 
     @Override
-    public String createRefreshToken(String subject, Date issuedAt) {
+    public String createRefreshToken(Long subject, Date issuedAt) {
         Date expiration = new Date(issuedAt.getTime() + (refreshTokenValiditySeconds * 1000));
 
         return Jwts.builder()
-                .setSubject(subject)
+                .setSubject(subject.toString())
                 .setIssuedAt(issuedAt)
                 .setIssuer(issuer)
                 .setExpiration(expiration)
