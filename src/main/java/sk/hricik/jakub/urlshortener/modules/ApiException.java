@@ -7,21 +7,22 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class ApiException extends RuntimeException {
 
-    private final String errorMsg;
+    private final String description;
     private final FaultType faultType;
+
     private final int specificCode;
 
-    public ApiException(FaultType faultType, String errorMsg) {
-        super(errorMsg);
+    public ApiException(FaultType faultType, String description) {
+        super(description);
         this.faultType = faultType;
-        this.errorMsg = errorMsg;
+        this.description = description;
         this.specificCode = 0;
     }
 
-    public ApiException(FaultType faultType, String errorMsg, SpecificCodeType specificCode) {
-        super(errorMsg);
+    public ApiException(FaultType faultType, String description, SpecificCodeType specificCode) {
+        super(description);
         this.faultType = faultType;
-        this.errorMsg = errorMsg;
+        this.description = description;
         this.specificCode = specificCode.getSpecificCode();
     }
 
@@ -29,7 +30,6 @@ public class ApiException extends RuntimeException {
     @Getter
     public enum SpecificCodeType {
 
-        // @formatter:off
         LOGIN_USERNAME_CHANGED(400),
         WRONG_USERNAME(401),
         WRONG_PASSWORD(402),
@@ -38,7 +38,6 @@ public class ApiException extends RuntimeException {
         WRONG_DEVICE_ID(340),
         IBAN_WRONG_VALIDFROM(1002),
         PASSWORD_CODE_EXPIRED(1003);
-        // @formatter:on
 
         private final int specificCode;
     }
@@ -46,7 +45,6 @@ public class ApiException extends RuntimeException {
     @AllArgsConstructor
     @Getter
     public enum FaultType {
-        // @formatter:off
         GENERAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         DB_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         ACTION_NOT_ALLOWED(HttpStatus.BAD_REQUEST),
@@ -66,7 +64,6 @@ public class ApiException extends RuntimeException {
         FILE_INVALID_MEDIA_TYPE(HttpStatus.BAD_REQUEST),
         EXPORT_GENERATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
         RESET_PASSWORD_EMAIL_ALREADY_SENT(HttpStatus.BAD_REQUEST);
-        // @formatter:on
 
         private final HttpStatus httpStatus;
     }

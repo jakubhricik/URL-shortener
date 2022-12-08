@@ -1,4 +1,4 @@
-package sk.hricik.jakub.urlshortener.error;
+package sk.hricik.jakub.urlshortener.modules.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import sk.hricik.jakub.urlshortener.error.dto.ErrorResponseDto;
+import sk.hricik.jakub.urlshortener.modules.error.dto.ErrorResponseDto;
 import sk.hricik.jakub.urlshortener.modules.ApiException;
 
 
@@ -28,8 +28,8 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(value = ApiException.class)
     protected ResponseEntity<Object> handleApiException(ApiException ex) {
-        log.error("Handling ApiException with message '{}'", ex.getErrorMsg());
-        return createResponse(ex.getFaultType(), ex.getErrorMsg(), ex.getSpecificCode());
+        log.error("Handling ApiException with message '{}'", ex.getDescription());
+        return createResponse(ex.getFaultType(), ex.getDescription(), ex.getSpecificCode());
     }
 
     @ExceptionHandler(value = MaxUploadSizeExceededException.class)
@@ -59,11 +59,11 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
 
     private ResponseEntity<Object> createResponse(ApiException.FaultType faultType, String message, int code) {
         return ResponseEntity.status(faultType.getHttpStatus())
-                .body(new ErrorResponseDto(faultType, message, code));
+                .body(new ErrorResponseDto(false, faultType, message, code));
     }
 
     private ResponseEntity<Object> createResponse(ApiException.FaultType faultType, String message) {
         return ResponseEntity.status(faultType.getHttpStatus())
-                .body(new ErrorResponseDto(faultType, message, 0));
+                .body(new ErrorResponseDto(false, faultType, message, 0));
     }
 }

@@ -1,11 +1,10 @@
 package sk.hricik.jakub.urlshortener.modules.auth.service;
 
-import sk.hricik.jakub.urlshortener.modules.auth.dto.LoginCredentialsDto;
-import sk.hricik.jakub.urlshortener.modules.auth.dto.RegisterCredentialsDto;
-import sk.hricik.jakub.urlshortener.modules.auth.dto.TokenResponse;
+import sk.hricik.jakub.urlshortener.modules.auth.dto.*;
+import sk.hricik.jakub.urlshortener.modules.auth.dto.AccountCreationResponse;
 
 public interface AuthService {
-    TokenResponse logInViaCredentials(LoginCredentialsDto credentials);
+    AccountLoginResponse login(AccountLoginDto credentials);
 
-    TokenResponse registerViaCredentials(RegisterCredentialsDto credentials);
+    AccountCreationResponse createAccount(AccountCreationDto credentials);
 }
