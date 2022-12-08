@@ -1,58 +1,77 @@
 package sk.hricik.jakub.urlshortener.configuration.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sk.hricik.jakub.urlshortener.configuration.filter.CustomAuthenticationFilter;
-import sk.hricik.jakub.urlshortener.configuration.filter.CustomAuthorizationFilter;
+import sk.hricik.jakub.urlshortener.modules.auth.security.RestAuthenticationEntryPoint;
+import sk.hricik.jakub.urlshortener.properties.SecurityProperties;
+import sk.hricik.jakub.urlshortener.configuration.security.filter.TokenAuthenticationFilter;
+import sk.hricik.jakub.urlshortener.modules.auth.security.jwt.JwtTokenFactory;
+import sk.hricik.jakub.urlshortener.modules.auth.security.jwt.JwtTokenParser;
+import sk.hricik.jakub.urlshortener.modules.auth.security.jwt.TokenFactory;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import javax.servlet.Filter;
 
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+    private final SecurityProperties securityProperties;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    public SecurityConfiguration(SecurityProperties securityProperties, RestAuthenticationEntryPoint restAuthenticationEntryPoint) {
+        this.securityProperties = securityProperties;
+        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
     }
 
+    private static final String[] AUTH_WHITELIST = {
+            "/auth/**"
+    };
+
     @Override
+    @SuppressWarnings("java:S4502")
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/auth/sign-in");
         http
+                .cors().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(STATELESS)
-                .and()
-                .authorizeHttpRequests().antMatchers("/auth/sign-in", "/auth/refresh-token").permitAll()
-                .and()
-                .authorizeHttpRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_ADMIN")
-                .and()
-                .authorizeHttpRequests().anyRequest().permitAll()
-                .and()
-                .addFilter(customAuthenticationFilter)
-                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(restAuthenticationEntryPoint).and()
+                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated();
+    }
+
+    private Filter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter(tokenParser());
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public TokenFactory tokenFactory() {
+        return new JwtTokenFactory(securityProperties);
+    }
+
+    @Bean
+    public JwtTokenParser tokenParser() {
+        return new JwtTokenParser(securityProperties.getSigningKey());
+    }
+
 }
