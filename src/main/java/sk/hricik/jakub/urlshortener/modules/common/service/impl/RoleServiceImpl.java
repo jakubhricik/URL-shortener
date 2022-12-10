@@ -46,11 +46,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public AppUser addRoleToUser(String roleName, String username) {
+    public AppUser addRoleToUser(String roleName, String accountId) {
         Role role = roleRepository.findByName(roleName);
-        Optional<AppUser> user = appUserRepository.findByUsername(username);
+        Optional<AppUser> user = appUserRepository.findByAccountId(accountId);
         if (user.isEmpty())
-            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is no user with username: " + username);
+            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is no user with AccountId: " + accountId);
 
         if (user.get().getRoles() == null)
             user.get().setRoles(new ArrayList<>());

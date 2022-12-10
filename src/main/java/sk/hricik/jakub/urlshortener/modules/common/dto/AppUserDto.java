@@ -14,7 +14,7 @@ import java.util.Collection;
 @Builder
 public class AppUserDto {
     private Long id;
-    private String username;
+    private String accountId;
     private String password;
     private Collection<Role> roles;
 }

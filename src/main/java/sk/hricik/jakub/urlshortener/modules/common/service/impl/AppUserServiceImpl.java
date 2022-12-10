@@ -57,9 +57,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser saveUserAndEncodePassword(AppUser newUser) {
-        Optional<AppUser> user = appUserRepository.findByUsername(newUser.getUsername());
+        Optional<AppUser> user = appUserRepository.findByAccountId(newUser.getAccountId());
         if (user.isPresent())
-            throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with username: " + newUser.getUsername());
+            throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with username: " + newUser.getAccountId());
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         return appUserRepository.saveAndFlush(newUser);
@@ -72,7 +72,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser getUser(String username) {
-        Optional<AppUser> user = appUserRepository.findByUsername(username);
+        Optional<AppUser> user = appUserRepository.findByAccountId(username);
         if (user.isEmpty())
             throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is not such user wit username: " + username);
         return user.get();

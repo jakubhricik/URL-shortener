@@ -13,7 +13,7 @@ import sk.hricik.jakub.urlshortener.modules.common.service.RoleService;
 @SpringBootApplication
 public class UrlShortenerApplication {
 
-	public static final String USERNAME = "jakubhricik";
+	public static final String ACCOUNT_ID = "jakubhricik";
 	public static final String PASSWORD = "password";
 
 	public static void main(String[] args) {
@@ -26,11 +26,10 @@ public class UrlShortenerApplication {
 			roleService.saveRole(new Role(null, "ROLE_ADMIN"));
 			roleService.saveRole(new Role(null, "ROLE_USER"));
 
-			// pass = "Heslo"
-			userService.saveUserDto(AppUserDto.builder().username(USERNAME).password(PASSWORD).build());
+			userService.saveUserDto(AppUserDto.builder().accountId(ACCOUNT_ID).password(PASSWORD).build());
 
-			roleService.addRoleToUser("ROLE_ADMIN", USERNAME);
-			roleService.addRoleToUser("ROLE_USER", USERNAME);
+			roleService.addRoleToUser("ROLE_ADMIN", ACCOUNT_ID);
+			roleService.addRoleToUser("ROLE_USER", ACCOUNT_ID);
 		};
 	}
 }

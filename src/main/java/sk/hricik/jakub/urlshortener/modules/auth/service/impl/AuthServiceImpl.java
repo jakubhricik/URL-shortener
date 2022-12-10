@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AccountLoginResponse login(AccountLoginDto credentials) {
-        AppUser user = userRepository.findByUsername(credentials.getAccountId())
+        AppUser user = userRepository.findByAccountId(credentials.getAccountId())
                 .orElseThrow(
                         () -> new ApiException(ApiException.FaultType.WRONG_CREDENTIALS,
                         "Wrong username", ApiException.SpecificCodeType.WRONG_USERNAME)
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AccountCreationResponse createAccount(AccountCreationDto credentials) {
-        Optional<AppUser> user = userRepository.findByUsername(credentials.getAccountId());
+        Optional<AppUser> user = userRepository.findByAccountId(credentials.getAccountId());
         if (user.isPresent())
             throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with account identifier: " + credentials.getAccountId());
 
@@ -67,13 +67,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         AppUser newUser = AppUser.builder()
-                .username(credentials.getAccountId())
+                .accountId(credentials.getAccountId())
                 .password(randomPassword)
                 .roles(new ArrayList<>())
                 .build();
 
         userService.saveUserAndEncodePassword(newUser);
-        newUser = roleService.addRoleToUser("ROLE_USER", newUser.getUsername());
+        newUser = roleService.addRoleToUser("ROLE_USER", newUser.getAccountId());
 
         return AccountCreationResponse.builder()
                 .success(true)

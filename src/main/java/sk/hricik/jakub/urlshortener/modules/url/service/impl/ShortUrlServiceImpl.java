@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.hricik.jakub.urlshortener.modules.ApiException;
 import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
+import sk.hricik.jakub.urlshortener.modules.common.model.Role;
 import sk.hricik.jakub.urlshortener.modules.common.service.AppUserService;
+import sk.hricik.jakub.urlshortener.modules.common.service.RoleService;
 import sk.hricik.jakub.urlshortener.modules.url.dto.RegisterUrlDto;
 import sk.hricik.jakub.urlshortener.modules.url.dto.ShortUrlResponse;
 import sk.hricik.jakub.urlshortener.modules.url.model.ShortUrl;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,9 +29,8 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
     private final ShortUrlRepository urlRepository;
     private final AppUserService appUserService;
-
+    private final RoleService roleService;
     private final HttpServletRequest httpServletRequest;
-
     private final HttpServletResponse httpServletResponse;
 
 
@@ -77,6 +80,29 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         httpServletResponse.setStatus(shortUrl.get().getRedirectType());
     }
 
+    @Override
+    public Map<String, Integer> getStatisticsByUsername(String username) {
+        AppUser user = appUserService.getLoggedUser();
+        Role adminRole = roleService.getRole("ROLE_ADMIN");
+        if (user.getRoles().contains(adminRole)) {
+            if (!user.getAccountId().equals(username)) {
+                user = appUserService.getUser(username);
+                return getStatisticsByUser(user);
+            }
+        } else if (!user.getAccountId().equals(username))
+            throw new ApiException(ApiException.FaultType.ACCESS_DENIED, "You have no permissions to get stats of " + username);
+
+        return getStatisticsByUser(user);
+    }
+
+    private Map<String, Integer> getStatisticsByUser(AppUser user) {
+        Map<String, Integer> results = new HashMap<>();
+        urlRepository.findShortUrlsByUser(user)
+                .forEach(url ->
+                        results.put(url.getOriginalUrl(), url.getNumberOfCalls())
+                );
+        return results;
+    }
 
     private String getShortUrlById(int id) {
         char[] map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();

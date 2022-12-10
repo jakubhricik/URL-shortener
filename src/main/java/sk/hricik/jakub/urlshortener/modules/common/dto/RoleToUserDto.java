@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoleToUserDto {
     private String roleName;
-    private String username;
+    private String accountId;
 }

@@ -29,7 +29,7 @@ public class ShortUrl {
 
     @Min(0)
     @Column(name = "cals")
-    private long numberOfCalls = 0L;
+    private int numberOfCalls = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private AppUser user;

@@ -6,6 +6,6 @@ import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
 import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    Optional<AppUser> findByUsername(String username);
+    Optional<AppUser> findByAccountId(String accountId);
 
 }

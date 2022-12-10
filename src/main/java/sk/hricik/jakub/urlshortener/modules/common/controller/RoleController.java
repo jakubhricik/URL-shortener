@@ -22,6 +22,6 @@ public class RoleController {
 
     @PostMapping("/add-to-user")
     public void addRoleToUser(@RequestBody RoleToUserDto roleToUserDto) {
-        roleService.addRoleToUser(roleToUserDto.getRoleName(), roleToUserDto.getUsername());
+        roleService.addRoleToUser(roleToUserDto.getRoleName(), roleToUserDto.getAccountId());
     }
 }
