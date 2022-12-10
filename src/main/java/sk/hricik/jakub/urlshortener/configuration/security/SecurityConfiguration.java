@@ -37,7 +37,9 @@ public class SecurityConfiguration {
 
     private static final String[] AUTH_WHITELIST = {
             "/account/**",
-            "/sh_**" /*shorten urls*/
+            "/sh_**", /*shorten urls*/
+            "/help",
+            "/"
     };
 
     @Bean
