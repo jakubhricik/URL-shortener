@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sk.hricik.jakub.urlshortener.modules.auth.security.RestAuthenticationEntryPoint;
 import sk.hricik.jakub.urlshortener.properties.SecurityProperties;
@@ -20,11 +19,13 @@ import sk.hricik.jakub.urlshortener.modules.auth.security.jwt.TokenFactory;
 
 import javax.servlet.Filter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     private final SecurityProperties securityProperties;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -36,12 +37,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
             "/account/**",
-            "/sh_**"
+            "/sh_**" /*shorten urls*/
     };
 
-    @Override
-    @SuppressWarnings("java:S4502")
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors().disable()
                 .csrf().disable()
@@ -51,9 +51,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(restAuthenticationEntryPoint).and()
                 .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated();
+                .authorizeHttpRequests(auth ->
+                    auth
+                            .antMatchers(AUTH_WHITELIST).permitAll()
+                            .anyRequest().authenticated()
+                )
+                .httpBasic(withDefaults());
+        return http.build();
     }
 
     private Filter tokenAuthenticationFilter() {
