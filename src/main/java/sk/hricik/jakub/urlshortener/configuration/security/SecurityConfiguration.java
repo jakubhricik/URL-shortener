@@ -35,7 +35,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private static final String[] AUTH_WHITELIST = {
-            "/account/**"
+            "/account/**",
+            "/sh_**"
     };
 
     @Override

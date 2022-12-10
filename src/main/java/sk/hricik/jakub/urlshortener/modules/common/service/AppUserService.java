@@ -6,6 +6,9 @@ import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
 import java.util.List;
 
 public interface AppUserService {
+
+    AppUser getLoggedUser();
+
     AppUser saveUserDto(AppUserDto appUserDto);
 
     AppUser saveUserAndEncodePassword(AppUser appUser);

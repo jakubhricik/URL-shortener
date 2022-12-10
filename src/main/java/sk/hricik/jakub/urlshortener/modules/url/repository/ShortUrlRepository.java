@@ -7,7 +7,7 @@ import sk.hricik.jakub.urlshortener.modules.url.model.ShortUrl;
 import java.util.List;
 import java.util.Optional;
 
-public interface ShortUrlRepository extends JpaRepository<ShortUrl, Long> {
+public interface ShortUrlRepository extends JpaRepository<ShortUrl, Integer> {
 
     List<ShortUrl> findShortUrlsByUser(AppUser user);
 
