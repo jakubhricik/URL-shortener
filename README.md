@@ -1,12 +1,14 @@
 # Readme: URL shortener
 URL shortener
 
+> app is deployed on [heroku](https://app-short-url.herokuapp.com/help)
+
 **Assignment**: Write an HTTP service which is used to shorten URLs, with following functionalities:
 - Registration of a web address (API)
 - Redirect of clients call according to the shortened URL-u
 - Statistic of API calls (API)
 
-*full assignment:*
+*full assignment:* [Infobip assignment - Java URL shortener eng.pdf](https://github.com/jakubhricik/URL-shortener/blob/master/Infobip%20assignment%20-%20Java%20URL%20shortener%20eng.pdf)
 
 
 ## Dependencies
@@ -18,7 +20,7 @@ You will need:
 *	Java JDK 17
 *	Maven 3.8.1 or higher
 *	Git
-*   Docker
+* Docker
 
 
 
