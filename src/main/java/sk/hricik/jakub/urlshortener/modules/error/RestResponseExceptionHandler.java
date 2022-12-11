@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import sk.hricik.jakub.urlshortener.modules.error.dto.ErrorResponseDto;
 import sk.hricik.jakub.urlshortener.modules.ApiException;
@@ -32,11 +31,6 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
         return createResponse(ex.getFaultType(), ex.getDescription(), ex.getSpecificCode());
     }
 
-    @ExceptionHandler(value = MaxUploadSizeExceededException.class)
-    protected ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
-        log.error("Handling MaxUploadSizeExceededException and saving to DB");
-        return createResponse(FILE_INVALID_SIZE, ex.getMessage());
-    }
 
     @ExceptionHandler(value = DataAccessException.class)
     protected ResponseEntity<Object> handleDbException(DataAccessException ex) {
