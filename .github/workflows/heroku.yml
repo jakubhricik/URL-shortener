@@ -19,13 +19,13 @@ jobs:
 
       - name: Heroku Container Registry login
         env:
-          HEROKU_API_KEY: 37cf8b1c-a58c-4e49-b478-7d1ab790b273
+          HEROKU_API_KEY:  ${{ env.HEROKU_API_KEY }}
         run: heroku container:login
       - name: Build and push
         env:
-          HEROKU_API_KEY: 37cf8b1c-a58c-4e49-b478-7d1ab790b273
-        run: heroku container:push -a app-short-url web
+          HEROKU_API_KEY: ${{ env.HEROKU_API_KEY }}
+        run: heroku container:push -a ${{ env.HEROKU_APP_NAME }} web
       - name: Release
         env:
           HEROKU_API_KEY: 37cf8b1c-a58c-4e49-b478-7d1ab790b273
-        run: heroku container:release -a app-short-url web
+        run: heroku container:release -a ${{ env.HEROKU_APP_NAME }} web
