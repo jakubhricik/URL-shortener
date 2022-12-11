@@ -50,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findByName(roleName);
         Optional<AppUser> user = appUserRepository.findByAccountId(accountId);
         if (user.isEmpty())
-            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is no user with AccountId: " + accountId);
+            throw ApiException.createObjectNotFound("There is no user with AccountId: " + accountId);
 
         if (user.get().getRoles() == null)
             user.get().setRoles(new ArrayList<>());

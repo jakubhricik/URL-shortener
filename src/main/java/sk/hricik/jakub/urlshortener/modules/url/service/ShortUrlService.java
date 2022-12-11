@@ -10,5 +10,5 @@ public interface ShortUrlService {
 
     void redirectToUrl(String shortenUrlCode);
 
-    Map<String, Integer> getStatisticsByUsername(String username);
+    Map<String, Integer> getStatisticsByAccountId(String accountId);
 }

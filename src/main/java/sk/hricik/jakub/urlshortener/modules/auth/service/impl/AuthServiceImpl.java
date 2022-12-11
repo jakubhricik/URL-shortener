@@ -37,10 +37,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccountLoginResponse login(AccountLoginDto credentials) {
         AppUser user = userRepository.findByAccountId(credentials.getAccountId())
-                .orElseThrow(
-                        () -> new ApiException(ApiException.FaultType.WRONG_CREDENTIALS,
-                        "Wrong username", ApiException.SpecificCodeType.WRONG_USERNAME)
-                );
+                .orElseThrow(() -> new ApiException(
+                                ApiException.FaultType.WRONG_CREDENTIALS,
+                                "Wrong username",
+                                ApiException.SpecificCodeType.WRONG_USERNAME
+                ));
         if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
             throw new ApiException(ApiException.FaultType.WRONG_CREDENTIALS, "Wrong password", ApiException.SpecificCodeType.WRONG_PASSWORD);
         }
@@ -56,14 +57,17 @@ public class AuthServiceImpl implements AuthService {
     public AccountCreationResponse createAccount(AccountCreationDto credentials) {
         Optional<AppUser> user = userRepository.findByAccountId(credentials.getAccountId());
         if (user.isPresent())
-            throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with account identifier: " + credentials.getAccountId());
+            throw new ApiException(
+                    ApiException.FaultType.OBJECT_ALREADY_EXISTS,
+                    "Already exists user with account identifier: " + credentials.getAccountId()
+            );
 
         String randomPassword;
         try {
             randomPassword = generateRandomPassword();
         } catch (NoSuchAlgorithmException ex) {
             log.error("random password generation problem:\n{}", ex.getMessage());
-            throw new ApiException(ApiException.FaultType.GENERAL_ERROR, "Problem while generating password, please contact support team.");
+            throw ApiException.createGeneralError("Problem while generating password, please contact support team.");
         }
 
         AppUser newUser = AppUser.builder()

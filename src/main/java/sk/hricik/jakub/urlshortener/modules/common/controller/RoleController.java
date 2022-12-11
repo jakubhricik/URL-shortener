@@ -1,6 +1,7 @@
 package sk.hricik.jakub.urlshortener.modules.common.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sk.hricik.jakub.urlshortener.modules.common.dto.RoleDto;
 import sk.hricik.jakub.urlshortener.modules.common.dto.RoleToUserDto;
@@ -21,6 +22,7 @@ public class RoleController {
     }
 
     @PostMapping("/add-to-user")
+    @PreAuthorize(value = "hasAnyAuthority('ROLE_ADMIN')")
     public void addRoleToUser(@RequestBody RoleToUserDto roleToUserDto) {
         roleService.addRoleToUser(roleToUserDto.getRoleName(), roleToUserDto.getAccountId());
     }

@@ -42,14 +42,14 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         try {
             new URL(registerUrlDto.getUrl());
         } catch (MalformedURLException e) {
-            throw new ApiException(ApiException.FaultType.INVALID_PARAMS, "Url is not valid");
+            throw ApiException.createInvalidParams("Url is not valid");
         }
 
         if (registerUrlDto.getRedirectType() == null) {
             registerUrlDto.setRedirectType((short) 302);
         }
         else if (registerUrlDto.getRedirectType() < 301 || registerUrlDto.getRedirectType() > 302)
-            throw new ApiException(ApiException.FaultType.INVALID_PARAMS, "Redirect Type must be 301 or 302");
+            throw ApiException.createInvalidParams("Redirect Type must be 301 or 302");
 
 
         Optional<ShortUrl> url = urlRepository.findShortUrlByOriginalUrl(registerUrlDto.getUrl());
@@ -73,7 +73,7 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         int urlId = getIdOfShortenUrlCode(shortenUrlCode);
         Optional<ShortUrl> shortUrl = urlRepository.findById(urlId);
         if (shortUrl.isEmpty())
-            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is no such URL with code: " + shortenUrlCode);
+            throw ApiException.createObjectNotFound("There is no such URL with code: " + shortenUrlCode);
         shortUrl.get().setNumberOfCalls(shortUrl.get().getNumberOfCalls() + 1);
 
         httpServletResponse.setHeader("Location", shortUrl.get().getOriginalUrl());
@@ -81,16 +81,16 @@ public class ShortUrlServiceImpl implements ShortUrlService {
     }
 
     @Override
-    public Map<String, Integer> getStatisticsByUsername(String username) {
+    public Map<String, Integer> getStatisticsByAccountId(String accountId) {
         AppUser user = appUserService.getLoggedUser();
         Role adminRole = roleService.getRole("ROLE_ADMIN");
         if (user.getRoles().contains(adminRole)) {
-            if (!user.getAccountId().equals(username)) {
-                user = appUserService.getUser(username);
+            if (!user.getAccountId().equals(accountId)) {
+                user = appUserService.getUser(accountId);
                 return getStatisticsByUser(user);
             }
-        } else if (!user.getAccountId().equals(username))
-            throw new ApiException(ApiException.FaultType.ACCESS_DENIED, "You have no permissions to get stats of " + username);
+        } else if (!user.getAccountId().equals(accountId))
+            throw new ApiException(ApiException.FaultType.ACCESS_DENIED, "You have no permissions to get stats of " + accountId);
 
         return getStatisticsByUser(user);
     }

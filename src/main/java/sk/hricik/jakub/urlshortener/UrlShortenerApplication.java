@@ -4,12 +4,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import sk.hricik.jakub.urlshortener.modules.common.dto.AppUserDto;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import sk.hricik.jakub.urlshortener.modules.common.model.AppUser;
 import sk.hricik.jakub.urlshortener.modules.common.model.Role;
 import sk.hricik.jakub.urlshortener.modules.common.service.AppUserService;
 import sk.hricik.jakub.urlshortener.modules.common.service.RoleService;
 
-
+@EnableWebMvc
 @SpringBootApplication
 public class UrlShortenerApplication {
 
@@ -26,7 +27,7 @@ public class UrlShortenerApplication {
 			roleService.saveRole(new Role(null, "ROLE_ADMIN"));
 			roleService.saveRole(new Role(null, "ROLE_USER"));
 
-			userService.saveUserDto(AppUserDto.builder().accountId(ACCOUNT_ID).password(PASSWORD).build());
+			userService.saveUserAndEncodePassword(AppUser.builder().accountId(ACCOUNT_ID).password(PASSWORD).build());
 
 			roleService.addRoleToUser("ROLE_ADMIN", ACCOUNT_ID);
 			roleService.addRoleToUser("ROLE_USER", ACCOUNT_ID);

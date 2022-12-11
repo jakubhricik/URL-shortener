@@ -9,10 +9,7 @@ public interface AppUserService {
 
     AppUser getLoggedUser();
 
-    AppUser saveUserDto(AppUserDto appUserDto);
-
-    AppUser saveUserAndEncodePassword(AppUser appUser);
-    AppUserDto getUserDto(String username);
+    void saveUserAndEncodePassword(AppUser appUser);
 
     AppUser getUser(String username);
     List<AppUserDto> getUsers();

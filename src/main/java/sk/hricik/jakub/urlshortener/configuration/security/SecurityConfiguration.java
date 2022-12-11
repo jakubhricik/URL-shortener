@@ -39,7 +39,12 @@ public class SecurityConfiguration {
             "/account/**",
             "/sh_**", /*shorten urls*/
             "/help",
-            "/"
+            "/",
+
+            //swagger api documentations
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/v3/api-docs"
     };
 
     @Bean

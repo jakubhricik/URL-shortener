@@ -42,7 +42,7 @@ public class AppUserServiceImpl implements AppUserService {
             JwtAuthentication authentication = tokenParser.parseAccessToken(accessToken);
             user = appUserRepository.findById(Long.parseLong(authentication.getName()));
             if (user.isEmpty())
-                throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is no user with ID: " + authentication.getName());
+                throw ApiException.createObjectNotFound( "There is no user with ID: " + authentication.getName());
         } catch (TokenException ex) {
             throw new ApiException(ApiException.FaultType.WRONG_CREDENTIALS, ex.getMessage());
         }
@@ -50,31 +50,20 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser saveUserDto(AppUserDto appUser) {
-        AppUser user = modelMapper.mapAppUserDtoToAppUser(appUser);
-        return saveUserAndEncodePassword(user);
-    }
-
-    @Override
-    public AppUser saveUserAndEncodePassword(AppUser newUser) {
+    public void saveUserAndEncodePassword(AppUser newUser) {
         Optional<AppUser> user = appUserRepository.findByAccountId(newUser.getAccountId());
         if (user.isPresent())
             throw new ApiException(ApiException.FaultType.OBJECT_ALREADY_EXISTS, "Already exists user with username: " + newUser.getAccountId());
 
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        return appUserRepository.saveAndFlush(newUser);
+        appUserRepository.saveAndFlush(newUser);
     }
 
     @Override
-    public AppUserDto getUserDto(String username) {
-        return modelMapper.mapAppUserToAppUserDto(getUser(username));
-    }
-
-    @Override
-    public AppUser getUser(String username) {
-        Optional<AppUser> user = appUserRepository.findByAccountId(username);
+    public AppUser getUser(String accountId) {
+        Optional<AppUser> user = appUserRepository.findByAccountId(accountId);
         if (user.isEmpty())
-            throw new ApiException(ApiException.FaultType.OBJECT_NOT_FOUND, "There is not such user wit username: " + username);
+            throw ApiException.createObjectNotFound( "There is not such user wit Account Id: " + accountId);
         return user.get();
     }
 

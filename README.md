@@ -12,7 +12,7 @@ URL shortener
 ## Dependencies
 There are a number of third-party dependencies used in the project. Browse the Maven pom.xml file for details of libraries and versions used.
 
-## Building and runing the project
+## Building and running the project
 You will need:
 
 *	Java JDK 17
@@ -39,4 +39,5 @@ docker run --publish 8080:8080 --name url-shortener url-shortener
 ```
 
 ### Browser URL
-Open your browser at the following URL: `localhost:8080/help` (giving REST interface details):
+Open your browser at the following URL: `localhost:8080/swagger-ui/` (giving REST interface details)      
+For help navigate on `localhost:8080/help` page   
